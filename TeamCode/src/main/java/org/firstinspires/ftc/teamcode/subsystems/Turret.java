@@ -1,13 +1,13 @@
 package org.firstinspires.ftc.teamcode.subsystems;
 
 import com.acmerobotics.dashboard.config.Config;
-import com.pedropathing.control.PIDFCoefficients;
-import com.pedropathing.control.PIDFController;
-import com.pedropathing.geometry.Pose;
+import com.pedropathing.math.Pose;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.seattlesolvers.solverslib.command.InstantCommand;
+import com.seattlesolvers.solverslib.controller.PIDFController;
 
 @Config
 public class Turret {
@@ -73,11 +73,11 @@ public class Turret {
             s.setCoefficients(new PIDFCoefficients(sp, 0, sd, sf));
             error = getTurretTarget() - getTurret();
             if (Math.abs(error) > pid_switch) {
-                p.updateError(error);
-                power = p.run();
+
+                power = p.calculate(error);
             } else if (Math.abs(error) > zero_switch) {
-                s.updateError(error);
-                power = s.run();
+
+                power = s.calculate(error);
             } else {
                 power = 0;
             }
@@ -124,8 +124,8 @@ public class Turret {
     }
 
     public void face(Pose targetPose, Pose robotPose) {
-        double angleToTargetFromCenter = Math.atan2((targetPose.getY() - robotPose.getY()), (targetPose.getX() - robotPose.getX()));
-        double robotAngleDiff = normalizeAngle(angleToTargetFromCenter - robotPose.getHeading());
+        double angleToTargetFromCenter = Math.atan2((targetPose.y() - robotPose.y()), (targetPose.x() - robotPose.x()));
+        double robotAngleDiff = normalizeAngle(angleToTargetFromCenter - robotPose.heading());
         setYaw(robotAngleDiff+stupidfuckingoffset);
     }
 

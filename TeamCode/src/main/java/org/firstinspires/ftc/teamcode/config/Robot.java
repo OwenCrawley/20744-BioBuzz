@@ -4,23 +4,20 @@ package org.firstinspires.ftc.teamcode.config;
 //import static org.firstinspires.ftc.teamcode.config.ApolloConstants.KUP;
 
 import com.pedropathing.follower.Follower;
-import com.pedropathing.geometry.Pose;
-import com.pedropathing.util.Timer;
+import com.pedropathing.math.Pose;
+import com.pedropathing.utils.Timer;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.subsystems.Intake;
 import org.firstinspires.ftc.teamcode.subsystems.Shooter;
 import org.firstinspires.ftc.teamcode.subsystems.Turret;
-import org.firstinspires.ftc.teamcode.subsystems.pedroPathing.Constants;
+import org.firstinspires.ftc.teamcode.pedro.Constants;
 import org.firstinspires.ftc.teamcode.util.Alliance;
 
 public class Robot {
     public final Intake i;
-    public final Limelight l;
     public final Shooter s;
     public final Turret t;
-    public final KickersV2 k;
-    public final KickersImp kicker;
     public final Follower f;
     public Alliance a;
 
@@ -35,19 +32,15 @@ public class Robot {
     public Robot(HardwareMap h, Alliance a) {
         this.a = a;
         i = new Intake(h);
-        l = new Limelight(h, a);
         s = new Shooter(h);
         t = new Turret(h);
-        k = new KickersV2(h);
-        kicker = new KickersImp(h);
-        f = Constants.createFollower(h);
+        f = Constants.create(h);
 
 //        hub = h.getAll(LynxModule.class).get(0);
 //        hub.setBulkCachingMode(LynxModule.BulkCachingMode.MANUAL);
 
-        loop.resetTimer();
-        setShootTarget();
-
+        loop.reset();
+//        setShootTarget();
     }
 
     public void periodic() {
@@ -60,28 +53,23 @@ public class Robot {
         f.update();
         t.periodic();
         s.periodic();
-        k.periodic();
     }
 
     public void stop() {
-        endPose = f.getPose();
+        endPose = f.pose();
     }
 
     public void saveEnd() {
-        endPose = f.getPose();
+        endPose = f.pose();
     }
 
 
-    public void setShootTarget() {
-        if (a == Alliance.BLUE/* && shootTarget.getX() != 6*/)
-//            shootTarget = new Pose(6, 144 - 6, 0);
-            shootTarget = FieldPoses.blueHoop;
-//            shootTarget = FieldPoses.teleBlueHoop;
-        else if (a == Alliance.RED/* && shootTarget.getX() != (144 - 6)*/)
-//            shootTarget = shootTarget.mirror();
-            shootTarget = FieldPoses.redHoop;
-//            shootTarget = FieldPoses.teleRedHoop;
-    }
+//    public void setShootTarget() {
+//        if (a == Alliance.BLUE)
+//            shootTarget = FieldPoses.blueHoop;
+//        else if (a == Alliance.RED)
+//            shootTarget = FieldPoses.redHoop;
+//    }
 
     public Pose getShootTarget() {
         return shootTarget;

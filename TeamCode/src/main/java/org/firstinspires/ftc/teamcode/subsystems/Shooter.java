@@ -1,17 +1,14 @@
 package org.firstinspires.ftc.teamcode.subsystems;
 
 import com.acmerobotics.dashboard.config.Config;
-import com.bylazar.configurables.annotations.Configurable;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.seattlesolvers.solverslib.command.SubsystemBase;
 
-import org.firstinspires.ftc.teamcode.config.ApolloConstants;
 
 @Config
-@Configurable
 
 public class Shooter extends SubsystemBase {
     public Servo f;
@@ -23,6 +20,7 @@ public class Shooter extends SubsystemBase {
     private boolean activated = true;
     public static double close = 1300;
     public static double far = 1650;
+    public static double velocityError = 40;
     public static double rpmOffset = 0;
     public static double flipUp = 0.87;
     public static double flipDown = 0.78;
@@ -176,7 +174,7 @@ public class Shooter extends SubsystemBase {
 
     public boolean atTarget() {
 //        return Math.abs((getTarget()- getVelocity())) < ApolloConstants.shooterVelError;
-        return getVelocity() >= getTarget()-ApolloConstants.shooterVelError;
+        return getVelocity() >= getTarget()-velocityError;
     }
 
     public void forDistance(double distance) {
