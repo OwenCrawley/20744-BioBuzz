@@ -1,0 +1,170 @@
+package org.firstinspires.ftc.teamcode.subsystems;
+
+import com.acmerobotics.dashboard.config.Config;
+import com.pedropathing.control.PIDFCoefficients;
+import com.pedropathing.control.PIDFController;
+import com.pedropathing.geometry.Pose;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.seattlesolvers.solverslib.command.InstantCommand;
+
+@Config
+public class Turret {
+    public static double pid_switch = 200, zero_switch = 50;
+    public static double error = 0, power = 0, manualPower = 0;
+
+//    public static double stupidfuckingoffset = 0.105;
+    public static double stupidfuckingoffset = -0.12;
+
+    public static double TICKS_PER_REV = 8192, GEAR_RATIO = 6; // Motor TPR=145.1 // REV Encoder TPR=8192
+    private double rpt = /*0.0029919*/ Math.PI / ( (TICKS_PER_REV*GEAR_RATIO)/2 );
+
+    public final DcMotorEx m;
+    private PIDFController p, s; // pidf controller for turret
+    public static double t = 0; // target for turret
+    public static double kp = 0.0004, kf = 0.0, kd = 0.00003, sp = 0.002, sf = 0, sd = 0.00000;
+
+    public static boolean on = true, manual = false;
+
+    public double offset = 0;
+
+    public Turret(HardwareMap hardwareMap) {
+        m = hardwareMap.get(DcMotorEx.class, "turret");
+        m.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+//        m.setDirection(DcMotor.Direction.REVERSE);
+        m.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+
+        rpt =  Math.PI / ( (TICKS_PER_REV*GEAR_RATIO)/2 );
+
+        p = new PIDFController(new PIDFCoefficients(kp, 0, kd, kf));
+        s = new PIDFController(new PIDFCoefficients(sp, 0, sd, sf));
+    }
+
+    public double getRPT(){
+        return rpt;
+    }
+
+    private void setTurretTarget(double ticks) {
+        t = ticks;
+    }
+
+    /** ticks */
+    public double getTurretTarget() {
+        return t;
+    }
+
+    /** ticks */
+    private void incrementTurretTarget(double ticks) {
+        t += ticks;
+    }
+
+    public double getTurret() {
+        return m.getCurrentPosition();
+    }
+
+    public void periodic() {
+        if (on) {
+            if (manual) {
+                m.setPower(manualPower);
+                return;
+            }
+            p.setCoefficients(new PIDFCoefficients(kp, 0, kd, kf));
+            s.setCoefficients(new PIDFCoefficients(sp, 0, sd, sf));
+            error = getTurretTarget() - getTurret();
+            if (Math.abs(error) > pid_switch) {
+                p.updateError(error);
+                power = p.run();
+            } else if (Math.abs(error) > zero_switch) {
+                s.updateError(error);
+                power = s.run();
+            } else {
+                power = 0;
+            }
+            m.setPower(power);
+        } else {
+            m.setPower(0);
+        }
+    }
+
+    public void manual(double power) {
+        manual = true;
+        manualPower = power;
+    }
+
+    public void automatic() {
+        manual = false;
+    }
+
+    public void on() {
+        on = true;
+    }
+
+    public void off() {
+        on = false;
+    }
+
+    /** Return yaw in radians */
+    public double getYaw() {
+        return normalizeAngle(getTurret() * rpt);
+    }
+    public void setOffset(double off) {
+        this.offset = off;
+    }
+    public void addOffset(double off) {
+        this.offset += off;
+    }
+    public void setYaw(double radians) {
+        radians = normalizeAngle(radians + offset);
+        setTurretTarget(radians/rpt);
+    }
+
+    public void addYaw(double radians) {
+        setYaw(getYaw() + radians);
+    }
+
+    public void face(Pose targetPose, Pose robotPose) {
+        double angleToTargetFromCenter = Math.atan2((targetPose.getY() - robotPose.getY()), (targetPose.getX() - robotPose.getX()));
+        double robotAngleDiff = normalizeAngle(angleToTargetFromCenter - robotPose.getHeading());
+        setYaw(robotAngleDiff+stupidfuckingoffset);
+    }
+
+    public void resetTurret() {
+        m.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        m.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        setTurretTarget(0);
+    }
+
+    public InstantCommand reset() {
+        return new InstantCommand(this::resetTurret);
+    }
+
+    public InstantCommand set(double radians) {
+        return new InstantCommand(() -> set(radians));
+
+    }
+
+    public InstantCommand add(double radians) {
+        return new InstantCommand(() -> setYaw(getYaw() + radians));
+    }
+
+//    public static double normalizeAngle(double angleRadians) {
+//        double angle = angleRadians % (Math.PI * 2D);
+//        if (angle <= -Math.PI) angle += Math.PI * 2D;
+//        if (angle > Math.PI) angle -= Math.PI * 2D;
+//        return angle;
+//    }
+
+    public static double normalizeAngle(double angleRadians) {
+        final double TWO_PI = Math.PI * 2D;
+        final double CENTER = Math.PI / 4D; // +45 degrees
+
+        double a = (angleRadians - CENTER) % TWO_PI;
+
+        if (a <= -Math.PI) a += TWO_PI;
+        if (a >  Math.PI) a -= TWO_PI;
+
+        return a + CENTER;
+    }
+
+}
