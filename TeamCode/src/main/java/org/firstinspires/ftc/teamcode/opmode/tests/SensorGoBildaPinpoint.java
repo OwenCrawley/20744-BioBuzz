@@ -25,6 +25,8 @@ import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
@@ -45,8 +47,16 @@ public class SensorGoBildaPinpoint extends OpMode {
     // Create an instance of the sensor
     GoBildaPinpointDriver pinpoint;
 
+    DcMotor fl, fr, bl, br;
+
     @Override
     public void init() {
+        fl = hardwareMap.get(DcMotor.class, "frontleft");
+        fr = hardwareMap.get(DcMotor.class, "frontright");
+        bl = hardwareMap.get(DcMotor.class, "backleft");
+        br = hardwareMap.get(DcMotor.class, "backright");
+        fr.setDirection(DcMotorSimple.Direction.REVERSE);
+        br.setDirection(DcMotorSimple.Direction.REVERSE);
         // Get a reference to the sensor
         pinpoint = hardwareMap.get(GoBildaPinpointDriver.class, "pinpoint");
 
@@ -56,9 +66,18 @@ public class SensorGoBildaPinpoint extends OpMode {
         // Set the location of the robot - this should be the place you are starting the robot from
         pinpoint.setPosition(new Pose2D(DistanceUnit.INCH, 0, 0, AngleUnit.DEGREES, 0));
     }
-
+    double x,y,pivot;
     @Override
     public void loop() {
+        x = gamepad1.left_stick_y;
+        y = gamepad1.left_stick_x;
+        pivot = gamepad1.right_stick_x;
+
+        fl.setPower(x+y+pivot);
+        fr.setPower(x-y-pivot);
+        bl.setPower(x-y+pivot);
+        br.setPower(x+y-pivot);
+
         telemetry.addLine("Push your robot around to see it track");
         telemetry.addLine("Press A to reset the position");
         if(gamepad1.a){
@@ -99,8 +118,8 @@ public class SensorGoBildaPinpoint extends OpMode {
          * increase when you move the robot forward. And the Y (strafe) pod should increase when
          * you move the robot to the left.
          */
-        pinpoint.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.FORWARD,
-                                      GoBildaPinpointDriver.EncoderDirection.FORWARD);
+        pinpoint.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.REVERSED,
+                                      GoBildaPinpointDriver.EncoderDirection.REVERSED);
 
         /*
          * Before running the robot, recalibrate the IMU. This needs to happen when the robot is stationary
