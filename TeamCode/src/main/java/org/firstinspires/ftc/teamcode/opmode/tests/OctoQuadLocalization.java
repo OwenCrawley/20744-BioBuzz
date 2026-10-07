@@ -33,7 +33,7 @@ import org.firstinspires.ftc.teamcode.subsystems.OctoQuadFWv3;
  * localizer feature, located here:
  */
 @TeleOp
-public class octoquadlocalization extends LinearOpMode
+public class OctoQuadLocalization extends LinearOpMode
 {
     // #####################################################################################
     // YOU MUST ADJUST THESE CONSTANTS FOR YOUR ROBOT! SEE THE QUICKSTART GUIDE.
