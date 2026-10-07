@@ -11,6 +11,9 @@ import com.seattlesolvers.solverslib.command.SubsystemBase;
 @Config
 
 public class Shooter extends SubsystemBase {
+    enum HoodState {
+        CLOSED, POLLEN, NECTAR
+    }
     public Servo f;
     private DcMotorEx l, r;
 
@@ -22,12 +25,8 @@ public class Shooter extends SubsystemBase {
     public static double far = 1650;
     public static double velocityError = 40;
     public static double rpmOffset = 0;
-    public static double flipUp = 0.87;
-    public static double flipDown = 0.78;
-    public static double flipDownAutoOffset = 0.025;
-    public static double hoodCorrection = 0.00;
-    private boolean correctHood = false;
-    private boolean up = false;
+    public static double hoodClosed = 0.6, hoodNectar = 0.78, hoodPollen = 0.87;
+    private HoodState hoodState = HoodState.CLOSED;
     public boolean isFar = false;
     public double hoodPos = 0.4;
     public Shooter(HardwareMap hardwareMap) {
@@ -63,10 +62,6 @@ public class Shooter extends SubsystemBase {
         return activated;
     }
 
-    public void hoodCorrect() {
-
-    }
-
     public void far() {
         setTarget(far);
         on();
@@ -79,59 +74,52 @@ public class Shooter extends SubsystemBase {
         isFar = false;
     }
 
-    public void adaptive(double dist) {
-        setTarget(calcShooterPower(dist));
-        if (calcHoodPower(dist) != hoodPos) hoodPos = calcHoodPower(dist);
-        f.setPosition(hoodPos);
-//        isFar = dist >= 100;
-    }
-
-    double[][] table = {
-
-            {50.7,800+rpmOffset, 0.37},
-            {65.9,875+rpmOffset,0.37},
-            {83, 940 +rpmOffset,0.5},
-            {91, 1000+rpmOffset,0.5},
-            {105,1100+rpmOffset,0.6},
-            {125,1300+rpmOffset,0.7}, //far shot
-            {136,1345+rpmOffset,0.75},
-            {145,1350+rpmOffset,0.8}
-    };
-    public double calcShooterPower(double dist) {
-        if (dist <= table[0][0]) return table[0][1];
-
-        for (int i = 0; i < table.length - 1; i++) {
-
-            double d1 = table[i][0];
-            double t1 = table[i][1];
-            double d2 = table[i+1][0];
-            double t2 = table[i+1][1];
-
-            if (dist <= d2) {
-                return t1 + (dist - d1) * (t2 - t1) / (d2 - d1);
-            }
-        }
-
-        return table[table.length - 1][1];
-    }
-
-    public double calcHoodPower(double dist) {
-        if (dist <= table[0][0]) return table[0][2];
-
-        for (int i = 0; i < table.length - 1; i++) {
-
-            double d1 = table[i][0];
-            double t1 = table[i][2];
-            double d2 = table[i+1][0];
-            double t2 = table[i+1][2];
-
-            if (dist <= d2) {
-                return t1 + (dist - d1) * (t2 - t1) / (d2 - d1);
-            }
-        }
-
-        return table[table.length - 1][2];
-    }
+//    double[][] table = {
+//
+//            {50.7,800+rpmOffset, 0.37},
+//            {65.9,875+rpmOffset,0.37},
+//            {83, 940 +rpmOffset,0.5},
+//            {91, 1000+rpmOffset,0.5},
+//            {105,1100+rpmOffset,0.6},
+//            {125,1300+rpmOffset,0.7}, //far shot
+//            {136,1345+rpmOffset,0.75},
+//            {145,1350+rpmOffset,0.8}
+//    };
+//    public double calcShooterPower(double dist) {
+//        if (dist <= table[0][0]) return table[0][1];
+//
+//        for (int i = 0; i < table.length - 1; i++) {
+//
+//            double d1 = table[i][0];
+//            double t1 = table[i][1];
+//            double d2 = table[i+1][0];
+//            double t2 = table[i+1][1];
+//
+//            if (dist <= d2) {
+//                return t1 + (dist - d1) * (t2 - t1) / (d2 - d1);
+//            }
+//        }
+//
+//        return table[table.length - 1][1];
+//    }
+//
+//    public double calcHoodPower(double dist) {
+//        if (dist <= table[0][0]) return table[0][2];
+//
+//        for (int i = 0; i < table.length - 1; i++) {
+//
+//            double d1 = table[i][0];
+//            double t1 = table[i][2];
+//            double d2 = table[i+1][0];
+//            double t2 = table[i+1][2];
+//
+//            if (dist <= d2) {
+//                return t1 + (dist - d1) * (t2 - t1) / (d2 - d1);
+//            }
+//        }
+//
+//        return table[table.length - 1][2];
+//    }
 
     public void setTarget(double velocity) {
         t = velocity;
@@ -148,28 +136,22 @@ public class Shooter extends SubsystemBase {
         }
     }
 
-    public void up() {
-        up = true;
-        f.setPosition(flipUp);
-        correctHood = true;
+    public void setHoodState(HoodState state) {
+        switch (state) {
+            case CLOSED: f.setPosition(hoodClosed);
+            case NECTAR: f.setPosition(hoodNectar);
+            case POLLEN: f.setPosition(hoodPollen);
+        }
+        hoodState = state;
     }
-
-    public void down() {
-        up = false;
-        f.setPosition(flipDown);
-        correctHood = true;
+    public void nectar() {
+        setHoodState(HoodState.NECTAR);
     }
-    public void downAuto() {
-        up = false;
-        f.setPosition(flipDown+flipDownAutoOffset);
-        correctHood = false;
+    public void pollen() {
+        setHoodState(HoodState.POLLEN);
     }
-
-    public void flip() {
-        if (f.getPosition() == flipDown)
-            up();
-        else
-            down();
+    public void closeHood() {
+        setHoodState(HoodState.CLOSED);
     }
 
     public boolean atTarget() {
@@ -183,14 +165,9 @@ public class Shooter extends SubsystemBase {
 //        setTarget((0.00180088*Math.pow(distance, 2))+(4.14265*distance)+948.97358);
     }
 
-    public boolean atUp() {
-        return f.getPosition() == flipUp;
-    }
-
     public double clamp(double val, double min, double max) {
         if (val < min) return min;
         if (val > max) return max;
         return val;
     }
 }
-
