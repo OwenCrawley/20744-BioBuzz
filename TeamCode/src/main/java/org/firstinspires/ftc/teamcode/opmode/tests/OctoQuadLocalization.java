@@ -23,6 +23,8 @@ package org.firstinspires.ftc.teamcode.opmode.tests;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.MovingStatistics;
 
 import org.firstinspires.ftc.teamcode.subsystems.OctoQuadFWv3;
@@ -35,6 +37,8 @@ import org.firstinspires.ftc.teamcode.subsystems.OctoQuadFWv3;
 @TeleOp
 public class OctoQuadLocalization extends LinearOpMode
 {
+
+    DcMotor l, r;
     // #####################################################################################
     // YOU MUST ADJUST THESE CONSTANTS FOR YOUR ROBOT! SEE THE QUICKSTART GUIDE.
     // #####################################################################################
@@ -67,6 +71,10 @@ public class OctoQuadLocalization extends LinearOpMode
      */
     public void runOpMode()
     {
+
+        l = hardwareMap.get(DcMotor.class, "driveLeft");
+        r = hardwareMap.get(DcMotor.class, "driveRight");
+        r.setDirection(DcMotorSimple.Direction.REVERSE);
         // Begin by retrieving a handle to the device from the hardware map. Take care
         // to specify 'OctoQuadFWv3' as specifying 'OctoQuad' will load the FTC SDK's
         // built-in driver which only supports firmware v2.
@@ -131,8 +139,15 @@ public class OctoQuadLocalization extends LinearOpMode
         /*
          * MAIN LOOP
          */
+        double x, pivot;
         while (opModeIsActive())
         {
+
+        x = gamepad1.left_stick_y;
+        pivot = gamepad1.right_stick_x;
+
+        l.setPower(x+pivot);
+        r.setPower(x-pivot);
             // Read updated data from the OctoQuad into the 'localizer' data structure
             oq.readLocalizerData(localizer);
 
