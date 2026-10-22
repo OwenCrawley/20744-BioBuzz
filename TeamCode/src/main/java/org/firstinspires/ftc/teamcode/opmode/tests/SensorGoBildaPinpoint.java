@@ -50,8 +50,8 @@ public class SensorGoBildaPinpoint extends OpMode {
 
     @Override
     public void init() {
-        l = hardwareMap.get(DcMotor.class, "driveLeft");
-        r = hardwareMap.get(DcMotor.class, "driveRight");
+        l = hardwareMap.get(DcMotor.class, "left");
+        r = hardwareMap.get(DcMotor.class, "right");
         r.setDirection(DcMotorSimple.Direction.REVERSE);
         // Get a reference to the sensor
         pinpoint = hardwareMap.get(GoBildaPinpointDriver.class, "pinpoint");

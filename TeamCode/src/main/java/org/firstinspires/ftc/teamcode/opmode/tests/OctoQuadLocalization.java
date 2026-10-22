@@ -72,8 +72,8 @@ public class OctoQuadLocalization extends LinearOpMode
     public void runOpMode()
     {
 
-        l = hardwareMap.get(DcMotor.class, "driveLeft");
-        r = hardwareMap.get(DcMotor.class, "driveRight");
+        l = hardwareMap.get(DcMotor.class, "left");
+        r = hardwareMap.get(DcMotor.class, "right");
         r.setDirection(DcMotorSimple.Direction.REVERSE);
         // Begin by retrieving a handle to the device from the hardware map. Take care
         // to specify 'OctoQuadFWv3' as specifying 'OctoQuad' will load the FTC SDK's
