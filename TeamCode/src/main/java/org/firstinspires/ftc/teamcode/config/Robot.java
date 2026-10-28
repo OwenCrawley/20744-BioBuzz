@@ -37,6 +37,8 @@ public class Robot {
         t = new Turret(h);
         f = Constants.create(h);
 
+        setShootTarget();
+
         hub = h.getAll(LynxModule.class).get(0);
         hub.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
 
@@ -65,12 +67,12 @@ public class Robot {
     }
 
 
-//    public void setShootTarget() {
-//        if (a == Alliance.BLUE)
-//            shootTarget = FieldPoses.blueHoop;
-//        else if (a == Alliance.RED)
-//            shootTarget = FieldPoses.redHoop;
-//    }
+    public void setShootTarget() {
+        if (a == Alliance.RED)
+            shootTarget = FieldPoses.hiveRed;
+        else if (a == Alliance.BLUE)
+            shootTarget = FieldPoses.mirror(FieldPoses.hiveRed);
+    }
 
     public Pose getShootTarget() {
         return shootTarget;

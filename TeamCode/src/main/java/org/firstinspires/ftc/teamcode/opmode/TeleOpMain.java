@@ -4,6 +4,7 @@ import com.pedropathing.follower.ManualDrive;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
+import org.firstinspires.ftc.teamcode.config.FieldPoses;
 import org.firstinspires.ftc.teamcode.config.Robot;
 import org.firstinspires.ftc.teamcode.util.Alliance;
 
@@ -38,6 +39,8 @@ public class TeleOpMain extends OpMode {
         if (gamepad1.a) r.s.pollen();
         else if (gamepad1.b) r.s.nectar();
         else r.s.closeHood();
+
+        r.t.face(r.getShootTarget(), r.f.pose());
 
         r.periodic();
     }
