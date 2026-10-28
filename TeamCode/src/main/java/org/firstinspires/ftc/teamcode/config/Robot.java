@@ -6,6 +6,7 @@ package org.firstinspires.ftc.teamcode.config;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.math.Pose;
 import com.pedropathing.utils.Timer;
+import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.subsystems.Intake;
@@ -21,7 +22,7 @@ public class Robot {
     public final Follower f;
     public Alliance a;
 
-//    private final LynxModule hub;
+    private final LynxModule hub;
     private final Timer loop = new Timer();
 
     public static Pose endPose;
@@ -36,8 +37,8 @@ public class Robot {
         t = new Turret(h);
         f = Constants.create(h);
 
-//        hub = h.getAll(LynxModule.class).get(0);
-//        hub.setBulkCachingMode(LynxModule.BulkCachingMode.MANUAL);
+        hub = h.getAll(LynxModule.class).get(0);
+        hub.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
 
         loop.reset();
 //        setShootTarget();
