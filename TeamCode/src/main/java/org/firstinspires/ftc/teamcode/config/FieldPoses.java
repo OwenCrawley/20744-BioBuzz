@@ -13,6 +13,8 @@ public class FieldPoses {
     public static Pose rightHiveRed = new Pose(hiveRed.x(), TS*-0.6);
     public static Pose leftHiveRed = new Pose(hiveRed.x(), TS*0.6);
 
+    public static Pose leftParkRed = new Pose(TS*-3+BOT_LENGTH/2,TS*1.5,0);
+
 
 
     public static Pose mirror(Pose pose) {
