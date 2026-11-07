@@ -18,8 +18,8 @@ import org.firstinspires.ftc.teamcode.util.Alliance;
 public class Robot {
     public final Intake i;
     public final Shooter s;
-    public final Turret t;
-    public final Follower f;
+//    public final Turret t;
+//    public final Follower f;
     public Alliance a;
 
     private final LynxModule hub;
@@ -34,8 +34,8 @@ public class Robot {
         this.a = a;
         i = new Intake(h);
         s = new Shooter(h);
-        t = new Turret(h);
-        f = Constants.create(h);
+//        t = new Turret(h);
+//        f = Constants.create(h);
 
         setShootTarget();
 
@@ -53,18 +53,18 @@ public class Robot {
 //            hub.clearBulkCache();
 //        }
 
-        f.update();
-        t.periodic();
+//        f.update();
+//        t.periodic();
         s.periodic();
     }
 
-    public void stop() {
-        endPose = f.pose();
-    }
+//    public void stop() {
+//        endPose = f.pose();
+//    }
 
-    public void saveEnd() {
-        endPose = f.pose();
-    }
+//    public void saveEnd() {
+//        endPose = f.pose();
+//    }
 
 
     public void setShootTarget() {
