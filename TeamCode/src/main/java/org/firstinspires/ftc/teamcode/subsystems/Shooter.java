@@ -15,7 +15,8 @@ public class Shooter extends SubsystemBase {
         CLOSED, POLLEN, NECTAR
     }
     public Servo f;
-    private DcMotorEx l, r;
+    private DcMotorEx s;
+//    private DcMotorEx l, r;
 
     private double t = 0;
     public static double kS = 0.535, kV = 0.00018, kP = 0.0025;
@@ -30,10 +31,11 @@ public class Shooter extends SubsystemBase {
     public boolean isFar = false;
     public double hoodPos = 0.4;
     public Shooter(HardwareMap hardwareMap) {
-        l = hardwareMap.get(DcMotorEx.class, "lShooter");
-        r = hardwareMap.get(DcMotorEx.class, "rShooter");
+//        l = hardwareMap.get(DcMotorEx.class, "lShooter");
+//        r = hardwareMap.get(DcMotorEx.class, "rShooter");
+        s = hardwareMap.get(DcMotorEx.class, "shooter");
         f = hardwareMap.get(Servo.class, "hood");
-        r.setDirection(DcMotorSimple.Direction.REVERSE);
+//        r.setDirection(DcMotorSimple.Direction.REVERSE);
     }
 
     public double getTarget() {
@@ -41,12 +43,13 @@ public class Shooter extends SubsystemBase {
     }
 
     public double getVelocity() {
-        return -l.getVelocity();
+        return /*-l.getVelocity()*/ s.getVelocity();
     }
 
     public void setPower(double p) {
-        l.setPower(p);
-        r.setPower(p);
+//        l.setPower(p);
+//        r.setPower(p);
+        s.setPower(p);
     }
 
     public void off() {

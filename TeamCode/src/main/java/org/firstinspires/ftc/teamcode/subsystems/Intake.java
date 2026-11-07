@@ -10,20 +10,26 @@ import com.seattlesolvers.solverslib.command.InstantCommand;
 
 @Config
 public class Intake {
-    private final DcMotorEx i;
+//    private final DcMotorEx i;
+    private final DcMotorEx l,r;
     public static double idle = 0;
     public static double in = 1;
     public static double out = -1;
 
 
     public Intake(HardwareMap hardwareMap) {
-        i = hardwareMap.get(DcMotorEx.class, "intake");
-        i.setDirection(DcMotorSimple.Direction.FORWARD);
+//        i = hardwareMap.get(DcMotorEx.class, "intake");
+//        i.setDirection(DcMotorSimple.Direction.FORWARD);
+        l = hardwareMap.get(DcMotorEx.class, "intakeL");
+        r = hardwareMap.get(DcMotorEx.class, "intakeR");
+        r.setDirection(DcMotorSimple.Direction.REVERSE);
         set(0);
     }
 
     public void set(double power) {
-        i.setPower(power);
+//        i.setPower(power);
+        l.setPower(power);
+        r.setPower(power);
     }
 
     public void spinIn() {

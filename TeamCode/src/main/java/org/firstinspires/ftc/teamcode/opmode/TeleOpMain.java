@@ -23,7 +23,6 @@ public class TeleOpMain extends OpMode {
 
     @Override
     public void start() {
-        r.i.spinIn();
         r.s.close();
         r.s.closeHood();
     }
@@ -40,7 +39,14 @@ public class TeleOpMain extends OpMode {
         else if (gamepad1.b) r.s.nectar();
         else r.s.closeHood();
 
-        r.t.face(r.getShootTarget(), r.f.pose());
+        if (gamepad1.right_bumper)
+            r.i.spinIn();
+        else if (gamepad1.left_bumper)
+            r.i.spinOut();
+        else
+            r.i.idle();
+
+//        r.t.face(r.getShootTarget(), r.f.pose());
 
         r.periodic();
     }
