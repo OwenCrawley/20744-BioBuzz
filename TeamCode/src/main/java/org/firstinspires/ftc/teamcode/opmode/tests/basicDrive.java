@@ -11,10 +11,10 @@ public class basicDrive extends LinearOpMode {
 
     @Override
     public void runOpMode() {
-        bl = hardwareMap.get(DcMotor.class,"backLeft");
-        br = hardwareMap.get(DcMotor.class,"backRight");
-        fl = hardwareMap.get(DcMotor.class,"frontLeft");
-        fr = hardwareMap.get(DcMotor.class,"frontRight");
+        bl = hardwareMap.get(DcMotor.class,"bl");
+        br = hardwareMap.get(DcMotor.class,"br");
+        fl = hardwareMap.get(DcMotor.class,"fl");
+        fr = hardwareMap.get(DcMotor.class,"fr");
 
         br.setDirection(DcMotorSimple.Direction.REVERSE);
         fr.setDirection(DcMotorSimple.Direction.REVERSE);
