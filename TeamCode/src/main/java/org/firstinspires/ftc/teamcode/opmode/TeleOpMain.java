@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.opmode;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.pedropathing.follower.ManualDrive;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -10,12 +11,15 @@ import org.firstinspires.ftc.teamcode.config.FieldPoses;
 import org.firstinspires.ftc.teamcode.config.Robot;
 import org.firstinspires.ftc.teamcode.util.Alliance;
 
-
+@Config
 public class TeleOpMain extends OpMode {
     DcMotor bl,br,fl,fr;
     double x,y,pivot;
     Robot r;
     final Alliance a;
+
+    public static double pivotSpeed = 0.5;
+
     public TeleOpMain(Alliance alliance) {
         this.a = alliance;
     }
@@ -29,6 +33,12 @@ public class TeleOpMain extends OpMode {
         fr = hardwareMap.get(DcMotor.class,"fr");
         br.setDirection(DcMotorSimple.Direction.REVERSE);
         fr.setDirection(DcMotorSimple.Direction.REVERSE);
+
+        br.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        fr.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        fl.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        bl.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
     }
 
     @Override
@@ -42,12 +52,12 @@ public class TeleOpMain extends OpMode {
         x = gamepad1.left_stick_y;
         y = gamepad1.left_stick_x;
 
-        pivot = gamepad1.right_stick_x;
+        pivot = gamepad1.right_stick_x * pivotSpeed;
 
-        bl.setPower(x + pivot - y);
-        br.setPower(x - pivot + y);
-        fl.setPower(x + pivot + y);
-        fr.setPower(x - pivot - y);
+        bl.setPower(x - pivot + y);
+        br.setPower(x + pivot - y);
+        fr.setPower(x + pivot + y);
+        fl.setPower(x - pivot - y);
 //        r.f.manual(ManualDrive.fieldCentric(
 //                gamepad1.left_stick_y,
 //                gamepad1.left_stick_x,
@@ -58,12 +68,12 @@ public class TeleOpMain extends OpMode {
         else if (gamepad1.b) r.s.nectar();
         else r.s.closeHood();
 
-        if (gamepad1.right_bumper)
+        if (gamepad1.right_bumper || gamepad1.a )
             r.i.spinIn();
         else if (gamepad1.left_bumper)
             r.i.spinOut();
         else
-            r.i.idle();
+            r.i.spinIdle();
 
 //        r.t.face(r.getShootTarget(), r.f.pose());
 
