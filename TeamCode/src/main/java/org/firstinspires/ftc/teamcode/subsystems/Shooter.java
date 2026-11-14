@@ -26,7 +26,7 @@ public class Shooter extends SubsystemBase {
     public static double far = 1650;
     public static double velocityError = 40;
     public static double rpmOffset = 0;
-    public static double hoodClosed = 0.6, hoodNectar = 0.78, hoodPollen = 0.87;
+    public static double hoodClosed = 0.43, hoodNectar = 0.23, hoodPollen = 0.23;
     private HoodState hoodState = HoodState.CLOSED;
     public boolean isFar = false;
     public double hoodPos = 0.4;
@@ -34,6 +34,7 @@ public class Shooter extends SubsystemBase {
 //        l = hardwareMap.get(DcMotorEx.class, "lShooter");
 //        r = hardwareMap.get(DcMotorEx.class, "rShooter");
         s = hardwareMap.get(DcMotorEx.class, "shooter");
+        s.setDirection(DcMotorSimple.Direction.REVERSE);
         f = hardwareMap.get(Servo.class, "hood");
 //        r.setDirection(DcMotorSimple.Direction.REVERSE);
     }
@@ -141,9 +142,9 @@ public class Shooter extends SubsystemBase {
 
     public void setHoodState(HoodState state) {
         switch (state) {
-            case CLOSED: f.setPosition(hoodClosed);
-            case NECTAR: f.setPosition(hoodNectar);
-            case POLLEN: f.setPosition(hoodPollen);
+            case CLOSED: f.setPosition(hoodClosed);break;
+            case NECTAR: f.setPosition(hoodNectar);break;
+            case POLLEN: f.setPosition(hoodPollen);break;
         }
         hoodState = state;
     }
