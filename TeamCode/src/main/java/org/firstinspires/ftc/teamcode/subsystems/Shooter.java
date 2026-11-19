@@ -34,7 +34,7 @@ public class Shooter extends SubsystemBase {
 //        l = hardwareMap.get(DcMotorEx.class, "lShooter");
 //        r = hardwareMap.get(DcMotorEx.class, "rShooter");
         s = hardwareMap.get(DcMotorEx.class, "shooter");
-        s.setDirection(DcMotorSimple.Direction.REVERSE);
+//        s.setDirection(DcMotorSimple.Direction.REVERSE);
         f = hardwareMap.get(Servo.class, "hood");
 //        r.setDirection(DcMotorSimple.Direction.REVERSE);
     }

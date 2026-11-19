@@ -19,7 +19,7 @@ public class Robot {
     public final Intake i;
     public final Shooter s;
 //    public final Turret t;
-//    public final Follower f;
+    public final Follower f;
     public Alliance a;
 
     private final LynxModule hub;
@@ -35,7 +35,7 @@ public class Robot {
         i = new Intake(h);
         s = new Shooter(h);
 //        t = new Turret(h);
-//        f = Constants.create(h);
+        f = Constants.create(h);
 
         setShootTarget();
 

@@ -16,6 +16,7 @@ public class basicDrive extends LinearOpMode {
         br = hardwareMap.get(DcMotor.class,"br");
         fl = hardwareMap.get(DcMotor.class,"fl");
         fr = hardwareMap.get(DcMotor.class,"fr");
+//        pp = hardwareMap.get(Pinpoint)
 
         br.setDirection(DcMotorSimple.Direction.REVERSE);
         fr.setDirection(DcMotorSimple.Direction.REVERSE);

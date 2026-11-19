@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.teamcode.config.FieldPoses;
 import org.firstinspires.ftc.teamcode.config.Robot;
@@ -23,6 +24,8 @@ public class TeleOpMain extends OpMode {
     final Alliance a;
 
     public static double pivotSpeed = 0.5;
+    double lastX = 0, lastPivot = 0;
+    public static double slew = 0.08;
 
     public TeleOpMain(Alliance alliance) {
         this.a = alliance;
@@ -38,6 +41,7 @@ public class TeleOpMain extends OpMode {
         fr = hardwareMap.get(DcMotor.class,"fr");
         br.setDirection(DcMotorSimple.Direction.REVERSE);
         fr.setDirection(DcMotorSimple.Direction.REVERSE);
+
 
         br.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         fr.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -60,16 +64,16 @@ public class TeleOpMain extends OpMode {
         pivot = gamepad1.right_stick_x * pivotSpeed;
 
         if (gamepad1.b && ll.hiveUp()) {
-            pivot = ll.AlignHive();      // turns until tx is about 0
-            x = -ll.alignDrive();        // drives until ty is about tyTarget (x is inverted like your stick)
-        }
+            ll.switchToAlign();
+            double targetPivot = ll.AlignHive();   // turn power the Limelight wants
+            double targetX = -ll.alignDrive();     // drive power the Limelight wants
 
-        if (gamepad1.b && ll.isHoldSet() && ll.hiveUp()) {
-            pivot = ll.holdYawTurn();
-            double[] h = ll.holdPosition();
-            x = -h[0];
-            y = h[1];
+            pivot = lastPivot + Range.clip(targetPivot - lastPivot, -slew, slew);
+            x = lastX + Range.clip(targetX - lastX, -slew, slew);
         }
+        lastPivot = pivot;
+        lastX = x;
+
 
         bl.setPower(x - pivot + y);
         br.setPower(x + pivot - y);
@@ -108,8 +112,6 @@ public class TeleOpMain extends OpMode {
 //        }
 
         telemetry.addData("B Pressed", bWasPressed);
-        telemetry.addData("Drive KP", ll.driveKP);
-        telemetry.addData("Strafe KP", ll.strafeKP);
         if (ll.l.getLatestResult() != null)
         {
             telemetry.addData("tx", ll.l.getLatestResult().getTx());
@@ -118,7 +120,6 @@ public class TeleOpMain extends OpMode {
             }
 
 
-        double[] hh = ll.holdPosition();
         telemetry.addData("B pressed", gamepad1.b);
         telemetry.addData("Hive tag seen", ll.hiveUp());
         telemetry.addData("Detected ID", ll.detectedID());
